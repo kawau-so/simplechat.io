@@ -130,9 +130,8 @@
             username = localStorage.getItem('currentUser') || '';
             if (!username) {
                 setUsername();
-            } else {
-                loadMessages();
             }
+            loadMessages();
         };
 
         // メッセージを送信する関数
@@ -157,6 +156,7 @@
 
             // 画像や音声、動画を送信する場合
             if (file) {
+                const fileURL = URL.createObjectURL(file);
                 const fileMessage = document.createElement('div');
                 fileMessage.classList.add('chat-message', 'user');
                 fileMessage.innerHTML = `<span class="username">${username}</span>`;
@@ -164,21 +164,21 @@
                 // ファイルタイプに応じた処理
                 if (file.type.startsWith('image/')) {
                     const img = document.createElement('img');
-                    img.src = URL.createObjectURL(file);
+                    img.src = fileURL;
                     fileMessage.appendChild(img);
-                    saveMessage(username, URL.createObjectURL(file), 'image');
+                    saveMessage(username, fileURL, 'image');
                 } else if (file.type.startsWith('audio/')) {
                     const audio = document.createElement('audio');
                     audio.controls = true;
-                    audio.src = URL.createObjectURL(file);
+                    audio.src = fileURL;
                     fileMessage.appendChild(audio);
-                    saveMessage(username, URL.createObjectURL(file), 'audio');
+                    saveMessage(username, fileURL, 'audio');
                 } else if (file.type.startsWith('video/')) {
                     const video = document.createElement('video');
                     video.controls = true;
-                    video.src = URL.createObjectURL(file);
+                    video.src = fileURL;
                     fileMessage.appendChild(video);
-                    saveMessage(username, URL.createObjectURL(file), 'video');
+                    saveMessage(username, fileURL, 'video');
                 } else {
                     fileMessage.textContent += `ファイルを送信: ${file.name}`;
                     saveMessage(username, `ファイルを送信: ${file.name}`, 'file');
@@ -192,18 +192,6 @@
 
             // チャットボックスをスクロール
             chatBox.scrollTop = chatBox.scrollHeight;
-
-            // 他のユーザーからのメッセージを表示
-            const otherUser = JSON.parse(localStorage.getItem('otherUser')) || {};
-            if (otherUser.username && otherUser.username !== username) {
-                const otherUserMessage = document.createElement('div');
-                otherUserMessage.classList.add('chat-message', 'other-user');
-                otherUserMessage.innerHTML = `<span class="username">${otherUser.username}</span>${otherUser.message}`;
-                chatBox.appendChild(otherUserMessage);
-
-                // チャットボックスをスクロール
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }
         }
 
         // メッセージを保存する関数
@@ -248,19 +236,6 @@
 
             // チャットボックスをスクロール
             chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        // ユーザーの情報を記録する関数
-        function saveOtherUser(username, message) {
-            localStorage.setItem('otherUser', JSON.stringify({ username, message }));
-        }
-
-        // 新しいユーザーがアクセスしてきた場合に呼ばれる関数
-        function newUserAccess(username, message) {
-            if (username !== localStorage.getItem('currentUser')) {
-                saveOtherUser(username, message);
-                loadMessages();
-            }
         }
     </script>
 </body>
