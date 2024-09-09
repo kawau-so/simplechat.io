@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>シンプルチャット</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .chat-container {
+            width: 400px;
+            height: 600px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        .chat-box {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .chat-message {
+            margin-bottom: 10px;
+        }
+
+        .chat-message.user {
+            text-align: right;
+        }
+
+        .chat-message.other-user {
+            text-align: left;
+        }
+
+        .chat-message .username {
+            font-weight: bold;
+            display: block;
+        }
+
+        .chat-footer {
+            display: flex;
+            flex-direction: column;
+            border-top: 1px solid #ddd;
+        }
+
+        .chat-footer input, .chat-footer button, .chat-footer input[type="file"] {
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            margin-top: 5px;
+        }
+
+        .chat-footer input[type="text"] {
+            flex: 1;
+        }
+
+        .chat-footer button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+
+        .chat-footer button:hover {
+            background-color: #45a049;
+        }
+
+        img, video, audio {
+            max-width: 200px;
+            border-radius: 10px;
+            margin-top: 5px;
+        }
+
+        video, audio {
+            max-height: 150px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            シンプルチャット
+        </div>
+        <div id="chat-box" class="chat-box">
+            <!-- チャットメッセージがここに追加されます -->
+        </div>
+        <div class="chat-footer">
+            <input type="text" id="user-input" placeholder="メッセージを入力..." />
+            <input type="file" id="file-input" />
+            <button onclick="sendMessage()">送信</button>
+        </div>
+    </div>
+
+    <script>
+        let username = '';
+
+        // ユーザー名を入力させる
+        function setUsername() {
+            username = prompt("ユーザー名を入力してください:", "ユーザー");
+            if (!username || username.trim() === '') {
+                username = "匿名ユーザー";
+            }
+            localStorage.setItem('currentUser', username);
+        }
+
+        // ページが読み込まれたらユーザー名を設定
+        window.onload = function() {
+            // すでにアクセスしたユーザー名を取得
+            username = localStorage.getItem('currentUser') || '';
+            if (!username) {
+                setUsername();
+            } else {
+                loadMessages();
+            }
+        };
+
+        // メッセージを送信する関数
+        function sendMessage() {
+            const userInput = document.getElementById('user-input');
+            const fileInput = document.getElementById('file-input');
+            const message = userInput.value.trim();
+            const file = fileInput.files[0];
+
+            if (message === '' && !file) return;
+
+            const chatBox = document.getElementById('chat-box');
+
+            // ユーザーのメッセージを追加
+            if (message !== '') {
+                const userMessage = document.createElement('div');
+                userMessage.classList.add('chat-message', 'user');
+                userMessage.innerHTML = `<span class="username">${username}</span>${message}`;
+                chatBox.appendChild(userMessage);
+                saveMessage(username, message, 'text');
+            }
+
+            // 画像や音声、動画を送信する場合
+            if (file) {
+                const fileMessage = document.createElement('div');
+                fileMessage.classList.add('chat-message', 'user');
+                fileMessage.innerHTML = `<span class="username">${username}</span>`;
+
+                // ファイルタイプに応じた処理
+                if (file.type.startsWith('image/')) {
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(file);
+                    fileMessage.appendChild(img);
+                    saveMessage(username, URL.createObjectURL(file), 'image');
+                } else if (file.type.startsWith('audio/')) {
+                    const audio = document.createElement('audio');
+                    audio.controls = true;
+                    audio.src = URL.createObjectURL(file);
+                    fileMessage.appendChild(audio);
+                    saveMessage(username, URL.createObjectURL(file), 'audio');
+                } else if (file.type.startsWith('video/')) {
+                    const video = document.createElement('video');
+                    video.controls = true;
+                    video.src = URL.createObjectURL(file);
+                    fileMessage.appendChild(video);
+                    saveMessage(username, URL.createObjectURL(file), 'video');
+                } else {
+                    fileMessage.textContent += `ファイルを送信: ${file.name}`;
+                    saveMessage(username, `ファイルを送信: ${file.name}`, 'file');
+                }
+                chatBox.appendChild(fileMessage);
+            }
+
+            // 入力フィールドをクリア
+            userInput.value = '';
+            fileInput.value = '';
+
+            // チャットボックスをスクロール
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // 他のユーザーからのメッセージを表示
+            const otherUser = JSON.parse(localStorage.getItem('otherUser')) || {};
+            if (otherUser.username && otherUser.username !== username) {
+                const otherUserMessage = document.createElement('div');
+                otherUserMessage.classList.add('chat-message', 'other-user');
+                otherUserMessage.innerHTML = `<span class="username">${otherUser.username}</span>${otherUser.message}`;
+                chatBox.appendChild(otherUserMessage);
+
+                // チャットボックスをスクロール
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        }
+
+        // メッセージを保存する関数
+        function saveMessage(username, content, type) {
+            const messages = JSON.parse(localStorage.getItem('messages')) || [];
+            messages.push({ username, content, type });
+            localStorage.setItem('messages', JSON.stringify(messages));
+        }
+
+        // メッセージを読み込む関数
+        function loadMessages() {
+            const messages = JSON.parse(localStorage.getItem('messages')) || [];
+            const chatBox = document.getElementById('chat-box');
+
+            messages.forEach(message => {
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('chat-message', message.username === username ? 'user' : 'other-user');
+                messageElement.innerHTML = `<span class="username">${message.username}</span>`;
+                
+                if (message.type === 'text') {
+                    messageElement.innerHTML += message.content;
+                } else if (message.type === 'image') {
+                    const img = document.createElement('img');
+                    img.src = message.content;
+                    messageElement.appendChild(img);
+                } else if (message.type === 'audio') {
+                    const audio = document.createElement('audio');
+                    audio.controls = true;
+                    audio.src = message.content;
+                    messageElement.appendChild(audio);
+                } else if (message.type === 'video') {
+                    const video = document.createElement('video');
+                    video.controls = true;
+                    video.src = message.content;
+                    messageElement.appendChild(video);
+                } else if (message.type === 'file') {
+                    messageElement.innerHTML += message.content;
+                }
+
+                chatBox.appendChild(messageElement);
+            });
+
+            // チャットボックスをスクロール
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // ユーザーの情報を記録する関数
+        function saveOtherUser(username, message) {
+            localStorage.setItem('otherUser', JSON.stringify({ username, message }));
+        }
+
+        // 新しいユーザーがアクセスしてきた場合に呼ばれる関数
+        function newUserAccess(username, message) {
+            if (username !== localStorage.getItem('currentUser')) {
+                saveOtherUser(username, message);
+                loadMessages();
+            }
+        }
+    </script>
+</body>
+</html>
