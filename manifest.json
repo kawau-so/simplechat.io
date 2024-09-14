@@ -1,15 +1,22 @@
 {
-  "name": "Chat App",
-  "short_name": "ChatApp",
-  "start_url": ".",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#007bff",
+  "name": "すぐるんちゃっと",
+  "short_name": "ちゃっとApp",
+  "description": "友達とChatできるさいとです",
   "icons": [
     {
-      "src": "icon.png",
+      "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
+    },
+    // ...
+    {
+      "src": "icon-32.png",
+      "sizes": "32x32",
+      "type": "image/png"
     }
-  ]
+  ],
+  "start_url": "index.html",
+  "display": "fullscreen",
+  "theme_color": "#63a3db",
+  "background_color": "#dedaca"
 }
