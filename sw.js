@@ -1,5 +1,5 @@
 var CACHE_NAME = 'chat';
-var urlsToCache = ['kawaiiusonokawauso.html', 'styles.css'];
+var urlsToCache = ['index.html', 'styles.css'];
 
 // インストール処理
 self.addEventListener('install', function (event) {
