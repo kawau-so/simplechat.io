@@ -3,7 +3,7 @@
   "short_name": "ちゃっと",
   "display": "standalone",
   "background_color": "#ffffff",
-  "start_url": "./index.html",
+  "start_url": "./kawaiiusonokawauso.html",
   "icons": [
     {
       "src": "icon-192.png",
