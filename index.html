@@ -1,12 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat App</title>
-    <link rel="manifest" href="/manifest.json">
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="manifest" href="./site.webmanifest">
+    <title>すぐるんちゃっと</title>
     <link rel="stylesheet" href="styles.css">
-</head>
+  </head>
 <body>
     <div class="chatlist"></div>
     <div class="chatsend">
@@ -25,15 +25,4 @@ var _0x32df12=_0x2da2;(function(_0x4aa26a,_0x291360){var _0x2baef2=_0x2da2,_0x5e
     <script src="script.js"></script>
     <footer>©Psannetwork</footer>
 </body>
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-      navigator.serviceWorker.register('sw.js').then(function(registration) {
-        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-      }, function(err) {
-        console.log('ServiceWorker registration failed: ', err);
-      });
-    });
-  }
-</script>
 </html>
