@@ -1,26 +1,20 @@
-var CACHE_NAME = 'color-name';
-var urlsToCache = [
-    'styles.css',
-];
+var CACHE_NAME = 'chat';
+var urlsToCache = ['index.html', 'styles.css'];
 
 // インストール処理
-self.addEventListener('install', function(event) {
-    event.waitUntil(
-        caches
-            .open(CACHE_NAME)
-            .then(function(cache) {
-                return cache.addAll(urlsToCache);
-            })
-    );
+self.addEventListener('install', function (event) {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(function (cache) {
+      return cache.addAll(urlsToCache);
+    })
+  );
 });
 
 // リソースフェッチ時のキャッシュロード処理
-self.addEventListener('fetch', function(event) {
-    event.respondWith(
-        caches
-            .match(event.request)
-            .then(function(response) {
-                return response || fetch(event.request);
-            })
-    );
+self.addEventListener('fetch', function (event) {
+  event.respondWith(
+    caches.match(event.request).then(function (response) {
+      return response ? response : fetch(event.request);
+    })
+  );
 });
