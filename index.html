@@ -1,9 +1,4 @@
-<a href="" class="btn btn-svg" onclick="gate();">
-  <svg>
-    <rect x="2" y="2" rx="0" fill="none" width=200 height="50"></rect>
-  </svg>
-  <span>パスワード入力</span>
-</a>
+<input type="button" value="パスワードを入力" onclick="gate();">
 <script type="text/javascript">
    function gate() {
       var UserInput = prompt("パスワードを入力して下さい:","");
@@ -28,9 +23,8 @@ body {
   padding: 30px;
 }
 
-.btn,
-a.btn,
-button.btn {
+
+button {
   font-size: 1.6rem;
   font-weight: 700;
   line-height: 1.5;
@@ -92,4 +86,4 @@ a.btn-svg:hover svg rect {
 a.btn-svg span {
   color: #000;
 }
-<style>  
+</style>  
